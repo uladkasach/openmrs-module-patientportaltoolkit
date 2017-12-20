@@ -4,36 +4,54 @@ function Calendar_Handler(){ // Dynamic Properties and Methods
     this.persistent_popover_parent_event = null;
     this.bound_popover_remover_function = null;
     this.modification_modal_handler = null;
-    
+
     // methods
     this.return_action_for = null;
 }
 Calendar_Handler.prototype = { // Static Properties and Methods
-    customDataSourceRenderer : function(element, date, events){ 
-        var uncompleted_events = events.filter(function(an_event){ return an_event.status != 1; }); 
-        var completed_events = events.filter(function(an_event){ return an_event.status == 1; }); 
+    customDataSourceRenderer : function(element, date, events){
+        console.log(date);
+        var uncompleted_events = events.filter(function(an_event){ return an_event.status != 1; });
+        var actual_events = uncompleted_events.filter(function(an_event){return !isNaN(an_event.id)});
+        var completed_events = events.filter(function(an_event){ return an_event.status == 1; });
+        console.log(uncompleted_events);
+        console.log(actual_events);
         if(uncompleted_events.length == 0){
             // If all events are completed, show an underline for this date
             var colors = completed_events.map(function(a) {return a.color;});
             var the_colors = colors;
             var c = this.blend_these_colors(the_colors);
+
             jq(element).css('background-color', "white");
             jq(element).css('color', 'black');
             jq(element).css('border-bottom', '1px solid ' + c);
         } else {
-            // Show a bubble for this date for all uncompleted events
+            // If there exist actual events, show the actual events on that day
             var colors = uncompleted_events.map(function(a) {return a.color;});
             var the_colors = colors;
             //the_colors = ["red", "blue"];
             var c = this.blend_these_colors(the_colors);
+            if(actual_events.length == 0) c = this.hex_to_rgba(c, 0.15);
             //console.log(c);
+            if(actual_events.length == 0){
+                jq(element).css('border-radius', '1px');
+                jq(element).css('color', 'black');
+            } else {
+                jq(element).css('color', 'white');
+                jq(element).css('border-radius', '15px');
+            }
             jq(element).css('background-color', c);
-            jq(element).css('color', 'white');
-            jq(element).css('border-radius', '15px');
         }
     },
+    hex_to_rgba : function(hex, alpha) {
+        if(typeof alpha == "undefined") alpha = 1;
+        var r = parseInt(hex.slice(1, 3), 16),
+            g = parseInt(hex.slice(3, 5), 16),
+            b = parseInt(hex.slice(5, 7), 16);
+        return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+    },
     mouseOnDay : function(e) {
-        if(!(e.events.length > 0)) return; 
+        if(!(e.events.length > 0)) return;
         if(this.persistent_popover_parent_event !== null && this.persistent_popover_parent_event.date.getTime() == e.date.getTime()) return; // if is persistant its already open
 
         // create content
@@ -60,7 +78,7 @@ Calendar_Handler.prototype = { // Static Properties and Methods
             name.style.setProperty("cursor", "pointer");
             name.href = this.return_action_for(this_event);
             if(this_event.status == 1){
-                name.style.setProperty("text-decoration", "line-through"); 
+                name.style.setProperty("text-decoration", "line-through");
                 name.style.setProperty("opacity", "0.4");
             } else {
                 //name.onclick = function(){ preventive_calendar_handler.modification_modal_handler.open_modal_for(id_of_appointment) };
@@ -83,22 +101,22 @@ Calendar_Handler.prototype = { // Static Properties and Methods
             html:true,
             content: content,
         });
-        var this_date = e.date; 
+        var this_date = e.date;
         jq(e.element).data('bs.popover').tip().find(".popover-content")[0].addEventListener("click", function(event){ // ensure popover does not close when clicked on
             event.stopPropagation();
-        }.bind(this), true); 
+        }.bind(this), true);
         jq(e.element).popover('show');
     },
     mouseOutDay : function(e) {
-        if(!(e.events.length > 0)) return; 
+        if(!(e.events.length > 0)) return;
         if(this.persistent_popover_parent_event !== null && this.persistent_popover_parent_event.date.getTime() == e.date.getTime()) return; // is persistant after mouse hover leaves
         jq(e.element).popover('hide');
     },
     clickDay : function(e){
-        if(!(e.events.length > 0)) return; 
+        if(!(e.events.length > 0)) return;
         if(this.persistent_popover_parent_event !== null && this.persistent_popover_parent_event.date.getTime() == e.date.getTime()) return;  // already done
         if(this.persistent_popover_parent_event !== null) this.popover_remove_persistance_and_hide();
-        this.persistent_popover_parent_event = e; 
+        this.persistent_popover_parent_event = e;
         this.bound_popover_remover_function = this.popover_remove_persistance_and_hide.bind(this);
         document.addEventListener("click", this.bound_popover_remover_function, false);
     },
@@ -106,7 +124,7 @@ Calendar_Handler.prototype = { // Static Properties and Methods
         // get event
         var e = this.persistent_popover_parent_event;
         // remove persistence
-        this.persistent_popover_parent_event = null;  
+        this.persistent_popover_parent_event = null;
         // hide event
         jq(e.element).popover('hide');
         // remove listener
@@ -118,7 +136,7 @@ Calendar_Handler.prototype = { // Static Properties and Methods
                 if(date.getTime() == circleDateTime) {
                     jq(element).css('border', '1px dashed red');
                     jq(element).css('border-radius', '15px');
-                } 
+                }
             },
             style : 'custom', // required for customDataSourceRenderer to be triggered
             customDataSourceRenderer: this.customDataSourceRenderer.bind(this),
@@ -151,16 +169,27 @@ Calendar_Handler.prototype = { // Static Properties and Methods
              var sub = v.toString(16).toUpperCase();
              var padsub = ('0'+sub).slice(-2);
              c += padsub;
-        }   
+        }
         return c;
     },
+
     open_modification_modal_for : function(appointment_id){
         this.popover_remove_persistance_and_hide();
-        this.modification_modal_handler.open_modal_for(appointment_id);  
+        this.modification_modal_handler.open_modal_for(appointment_id);
     },
 };
 
 
+
+/*
+for(var i = 0; i < data.length; i++){
+    let this_data = data[i];
+    if(isNaN(this_data.id[0])){
+        data[i].endDate = this_data.targetDate + 1000*60*60*24 // target + 1day
+        data[i].startDate = this_data.targetDate - 1000*60*60*24 // today - 1day
+    }
+}
+*/
 
 function Event_Data_Manager(){
     this.data = {};
@@ -178,8 +207,13 @@ Event_Data_Manager.prototype = {
         var possible_concept_ids = this.possible_events.map(item => parseInt(item.concept_id));
         for(var i = 0; i < the_data.length; i++){
             var this_event = the_data[i];
+            if(isNaN(this_event.id)){ // if this is a recommended event, and not an actually recorded event, make the distinction clear by setting the date to be a range, #295
+                console.log("Found a recommended event!");
+                this_event.endDate = this_event.targetDate + 1000*60*60*24 // target + 1day
+                this_event.startDate = this_event.targetDate - 1000*60*60*24 // today - 1day
+            }
             if(possible_concept_ids.indexOf(parseInt(this_event.concept_id)) > -1){
-                 this.data[this_event.id] = this_event;   
+                 this.data[this_event.id] = this_event;
             } else {
                 console.warn("Event ("+this_event.concept_id+", " + this_event.followProcedureName + ") is not valid.");
             }
@@ -230,7 +264,7 @@ Event_New_Appointment_Dropdown_Handler.prototype = {
         }
     },
     append_to_dropdown : function(the_event){
-        //<li><a href="#" onclick = 'new_appointment_dropdown_handler.handle_dropdown_change(0)'>Age - Closest to You</a></li>  
+        //<li><a href="#" onclick = 'new_appointment_dropdown_handler.handle_dropdown_change(0)'>Age - Closest to You</a></li>
 
         // create DOM elements
         var parent = document.createElement("li");
@@ -248,7 +282,7 @@ Event_New_Appointment_Dropdown_Handler.prototype = {
     },
 }
 
-       
+
 
 function Event_Table_Handler(){
     this.table_body_element = null;
@@ -276,7 +310,7 @@ Event_Table_Handler.prototype = {
         var time_difference_90_days = (90 * 24 * 60 * 60 * 1000)
         var forward_90_timestamp  = today_timestamp  + time_difference_90_days;
         var backward_90_timestamp = today_timestamp  - time_difference_90_days;
-        var event_timestamp = new Date(this_event.targetDate).getTime();  
+        var event_timestamp = new Date(this_event.targetDate).getTime();
         if(event_timestamp > forward_90_timestamp || event_timestamp < backward_90_timestamp) return false;
         return true;
     },
@@ -306,37 +340,45 @@ Event_Table_Handler.prototype = {
         */
         // Create row element
         //if(this_event.status == 1)console.log(this_event);
-        
+
+        var recommendation = false;
         var row = document.createElement("tr");
         if(this_event.status == 1)  row.style = 'color:rgba(0, 0, 0, 0.4);';
+        if(isNaN(this_event.id)) recommendation = true;
+
 
         // Create row selector element
         var row_selector = document.createElement("div");
-        row_selector.style = 'position:absolute; margin-left:-20px; margin-top:-16px;  width:10px; height:10px; '; 
+        row_selector.style = 'position:absolute; margin-left:-20px; margin-top:-16px;  width:10px; height:10px; ';
         row_selector.className = "row_selector";
 
         // Create first col
         var td1 = document.createElement("td");
-        td1.innerHTML= this_event.followProcedureName;
+        td1.innerHTML = this_event.followProcedureName;
         td1.appendChild(row_selector);
         row.appendChild(td1);
 
         // Create second col
-        var td2 = document.createElement("td"); 
+        var td2 = document.createElement("td");
         td2.className = 'clearfix';
         td2.innerHTML = "<span class='pull-left'>" + this_event.formatedTargetDate + "</span>";
+        if(recommendation){
+            var warning_text = "This is only a recommendation, you do not actually have an appointment!"
+            td2.innerHTML = "<span class='pull-left' style = 'cursor:pointer;' onclick = \"alert('"+warning_text+"')\" title = '"+warning_text+"'>" + new Date(this_event.startDate).format("M jS") + " - " + new Date(this_event.endDate).format("M jS, Y")  +"*</span>";
+            //td2.innerHTML = "<div><div style = 'font-size:14px; margin-top:-10px;'>Recommended</div><div>" + new Date(this_event.startDate).format("M jS") + " - " + new Date(this_event.endDate).format("M jS")  + " </div></div>"
+        }
         row.appendChild(td2);
 
         // Create third col
-        var td3 = document.createElement("td"); 
+        var td3 = document.createElement("td");
         td3.className = 'clearfix';
         if(this_event.status == 1){ // if completed
             td3.innerHTML = "<span class='pull-left'>" + this_event.formatedCompletedDate + "</span>";
-        } 
+        }
         row.appendChild(td3);
 
         // Create third col
-        var td4 = document.createElement("td"); 
+        var td4 = document.createElement("td");
         td4.className = 'clearfix';
         var button_class = (this_event.status == 1) ? "btn-custom-subtle" : "btn-primary";
         td4.innerHTML = "<a class='btn " + button_class + " btn-sm pull-right "+ this.button_identification_class + "'  data-id = '"+escape(this_event.id)+"'>Manage</a>";
@@ -350,9 +392,9 @@ Event_Table_Handler.prototype = {
 
     initialize_buttons : function(){
         jq('.'+this.button_identification_class).on('click', function(e){
-            var id_of_appointment = jq(e.target).data('id'); 
+            var id_of_appointment = jq(e.target).data('id');
             this.modification_modal_handler.open_modal_for(id_of_appointment);
-        }.bind(this));  
+        }.bind(this));
 
         if(this.add_new_appointment_button != null){
             // Initialize Adder button

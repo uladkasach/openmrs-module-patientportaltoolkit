@@ -1,10 +1,10 @@
 <script>
-    
-    
+
+
     function load_preventive_data() {
         //console.log(jq("#personUuid").val());
         var OpenMRSInstance=window.location.href;
-        
+
         // use promises to ensure that all possible guidelines are loaded before we load reminder data. Because of this, we are able to remove non-valid reminders from the reminders we display.
         var load_all_possible_events = new Promise((resolve, reject)=>{
             //Load all possible guidelines that user can choose to create a new reminder from
@@ -19,9 +19,9 @@
                 resolve(data);
             });
         })
-        
+
         var promise_to_load_valid_options_and_recorded_data = Promise.all([load_all_possible_events, load_all_current_events])
-        
+
         var initialize_objects = promise_to_load_valid_options_and_recorded_data.then((data_array)=>{
             var possible_events = data_array[0];
             var events = data_array[1];
@@ -31,17 +31,17 @@
 
             // Set datasource for data_manager
             preventive_data_manager.set_data(events);
-            
+
             // get valid events
             var valid_events = preventive_data_manager.nonkeyed_data;
-            
+
             // fill table and calendar based on valid data
             preventive_table_handler.setDataSource(valid_events);
             preventive_calendar_handler.calendar_object.setDataSource(valid_events);
         })
-        
+
     }
-    
+
     window.addEventListener("load", function(){
         ///////////////////
         // Initialize Reminder Calendar & Calendar Handler
@@ -49,7 +49,7 @@
         window["preventive_calendar_handler"] = new Calendar_Handler(); // usage of window[""] is not technical; it is to clearly demonstrate that this object needs to be global.
         preventive_calendar_handler.calendar_DOM_identifier = '#preventiveCareCalendar';
         preventive_calendar_handler.return_action_for = function(the_event){
-            return "javascript:preventive_calendar_handler.open_modification_modal_for('" + the_event.id + "');";   
+            return "javascript:preventive_calendar_handler.open_modification_modal_for('" + the_event.id + "');";
         }
         var currentYear = new Date().getFullYear();
         var currentMonth = new Date().getMonth();
@@ -57,12 +57,12 @@
         var circleDateTime = new Date(currentYear, currentMonth, currentDay).getTime();
         preventive_calendar_handler.initialize_calendar(circleDateTime);
         preventive_calendar_handler.modification_modal_handler = managePreventiveCareModal_handler;
-        
+
         ///////////////////
         // Initialize Data Manager
         ///////////////////
         window["preventive_data_manager"] = new Event_Data_Manager();
-        
+
         ///////////////////
         // Initialize Reminder Table Handler
         ///////////////////
@@ -72,12 +72,12 @@
         preventive_table_handler.modification_modal_handler = managePreventiveCareModal_handler;
         preventive_table_handler.button_identification_class = "managePreventiveCare_sourceButton";
         preventive_table_handler.add_new_appointment_button = "add_new_preventive_appointment_button";
-        
+
         setTimeout(load_preventive_data, 1000);
     });
 
-    
-    
+
+
 </script>
 <div class="clearfix">
     ${ui.includeFragment("patientportaltoolkit", "preventiveCareManageModal")}
@@ -88,7 +88,7 @@
             <thead>
             <tr>
                 <th>Appointment Type</th>
-                <th>Recommended Date</th>
+                <th>Appointment Date</th>
                 <th>Completed Date </th>
                 <% if(isACareGiver != 1) { %>
                     <th style = 'text-align:right;'>Actions</th>
