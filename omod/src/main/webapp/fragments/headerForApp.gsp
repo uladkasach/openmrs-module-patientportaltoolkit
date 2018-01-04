@@ -51,7 +51,7 @@
 
     <script type="text/javascript"
             src="${ ui.resourceLink("patientportaltoolkit", "/scripts/bootstrap-datepicker.js") }"></script>
-    
+
     <script type="text/javascript"
             src="${ ui.resourceLink("patientportaltoolkit", "/scripts/profilePicturesBadge.js") }"></script>
     <script type="text/javascript"
@@ -62,6 +62,10 @@
 
     <script type="text/javascript">
         jq('.profileBadge').profileBadge();
+    </script>
+
+    <script>
+        window.view = {}; // defines the object which is added to by views throughout the program. e.g., see ../fragments/connections/connection_element.gsp
     </script>
 
     <style>
@@ -80,7 +84,7 @@
         <ul class="nav navbar-nav">
             <li id="patientPortalJournals"> <a href="/openmrs/patientportaltoolkit/journals.page"><span class="fa fa-comments-o  fa-lg"></span> &nbsp; Posts</a></li>
             <% if(contextUser.person.isPatient()) { %>
-                <li id="patientPortalNavHome"><a href="/openmrs/patientportaltoolkit/home.page"> <span class="fa fa-medkit fa-lg"></span>  &nbsp; My Medical Profile</a></li> 
+                <li id="patientPortalNavHome"><a href="/openmrs/patientportaltoolkit/home.page"> <span class="fa fa-medkit fa-lg"></span>  &nbsp; My Medical Profile</a></li>
             <% } %>
             <li id="patientPortalConnections"><a href="/openmrs/patientportaltoolkit/patientconnections.page"><span class="fa fa-address-book-o  fa-lg"></span>  &nbsp; My Connections</a></li>
             <% if(contextUser.person.isPatient()) { %>
@@ -90,7 +94,7 @@
         <ul class="nav navbar-nav navbar-right">
             <li id="patientPortalUserName"><a href="/openmrs/patientportaltoolkit/editprofile.page"><span class="fa fa-user-circle fa-lg"></span> &nbsp; ${ (username) }</a></li>
             <li><a href="/openmrs/patientportaltoolkit/messages.page"><span class="fa fa-envelope fa-lg"></span> &nbsp; Messages</a></li>
-            
+
             <li class="dropdown">
                 <a href="#" data-toggle="dropdown" class="dropdown-toggle"><span class="fa fa-life-ring fa-lg"></span>  &nbsp; Help <b class="caret"></b></a>
                 <ul class="dropdown-menu" id="menu1">
@@ -99,7 +103,7 @@
                   <li><a  href="/openmrs/patientportaltoolkit/help/feedbackform.page"> Contact Us</a></li>
                 </ul>
             </li>
-            
+
             <li><a id="navigationLogout">Logout &nbsp; <span class="fa fa-sign-out fa-lg"></span>  </a></li>
 
         </ul>

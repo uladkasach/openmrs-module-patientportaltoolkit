@@ -18,7 +18,7 @@ jq(document).ready(function(){
     jq(".imagePlaceHolders").attr("src",OpenMRSInstance.split("/patientportaltoolkit")[0]+"/images/openmrs_logo_white.gif");
     var nowTemp = new Date();
     var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
-    
+
     var markScheduledDatePicker= jq( "#markScheduledDate" ).datepicker({
         onRender: function(date) {
             return date.valueOf() < now.valueOf() ? 'disabled' : '';
@@ -395,119 +395,6 @@ jq(document).ready(function(){
     }
         });
 
-//------------- Edit Relation Button JS ---------
-    $('.editRelationButton').click(
-        function () {
-            var relationshipID=this.id.split('relationedit')[1];
-            //console.log(relationshipID);
-            $("#editRelationshipIdHolder").val(relationshipID);
-            //console.log($('#'+relationshipID+'relationPerson').text());
-
-            // console.log($('#'+encounterID+'surgeryPCPName').text());
-            $("#editPersonName").text($('#'+relationshipID+'relationPerson').text());
-            $("#editRelationProfileBadge").text($('#'+relationshipID+'relationPerson').text().match(/\b(\w)/g).join(''));
-            $("#editRelationshipSelect").val($('#'+relationshipID+'relationType').text());
-            $("#editRelationSecurityLevels").val($('#'+relationshipID+'relationShareID').val());
-            if($('#checkPersonInRelation'+relationshipID).val()== "0"){
-                $("#editRelationshipSelect").attr('disabled',true);
-            }
-
-            $.ajax({
-                type : "POST",
-                url : OpenMRSInstance.split("/patientportaltoolkit")[0]+"/ws/patientportaltoolkit/hasaccess",
-                data : {
-                    relationshipId: relationshipID,
-                    shareType: "6776d050-e2fe-47cc-8af4-de3fdeb1b76d"
-        },
-                success : function setChecked(response) {
-                    if (response) {
-                        $("#editShareType" + "6776d050-e2fe-47cc-8af4-de3fdeb1b76d").prop('checked', true);
-                    }
-                    else {
-                        $("#editShareType" + "6776d050-e2fe-47cc-8af4-de3fdeb1b76d").prop('checked', false);
-                    }
-                },
-                error : function(e) {
-                    alert('Error: ' + e);
-                },
-            });
-            $.ajax({
-                type : "POST",
-                url : OpenMRSInstance.split("/patientportaltoolkit")[0]+"/ws/patientportaltoolkit/hasaccess",
-                data : {
-                    relationshipId: relationshipID,
-                    shareType: "18e440a6-518b-4dbd-8057-dd0f88ee6d15"
-                },
-                success : function setChecked(response) {
-                    if (response) {
-                        $("#editShareType" + "18e440a6-518b-4dbd-8057-dd0f88ee6d15").prop('checked', true);
-                    }
-                    else {
-                        $("#editShareType" + "18e440a6-518b-4dbd-8057-dd0f88ee6d15").prop('checked', false);
-                    }
-                },
-                error : function(e) {
-                    alert('Error: ' + e);
-                },
-            });
-            $.ajax({
-                type : "POST",
-                url : OpenMRSInstance.split("/patientportaltoolkit")[0]+"/ws/patientportaltoolkit/hasaccess",
-                data : {
-                    relationshipId: relationshipID,
-                    shareType: "c21b5749-5972-425b-a8dc-15dc8f899a96"
-                },
-                success : function setChecked(response) {
-                    if (response) {
-                        $("#editShareType" + "c21b5749-5972-425b-a8dc-15dc8f899a96").prop('checked', true);
-                    }
-                    else {
-                        $("#editShareType" + "c21b5749-5972-425b-a8dc-15dc8f899a96").prop('checked', false);
-                    }
-                },
-                error : function(e) {
-                    alert('Error: ' + e);
-                },
-            });
-        });
-
-    //------------------- Edit Relation Button JS Ends ----------------------
-
-
-//------------- Edit Relation Button save JS ---------
-    $('#editRelationshipSaveButton').click(
-        function () {
-            var checkboxValuesList=[];
-            jq(".editRelationShareCheckbox:checkbox:checked").each(function () {
-                checkboxValuesList.push($(this).val());
-                //checkboxValues=checkboxValues+$(this).val()+",";
-           });
-            var checkboxValues=checkboxValuesList.toString();
-            $.ajax({
-                type : "POST",
-                url : "connections/saveRelationshipfromEdit.action",
-                data : {
-                    relationshipId: jq("#editRelationshipIdHolder").val(),
-                    personRelationType: jq("#editRelationshipSelect").val(),
-                    personRelationSecurityLayer: checkboxValues
-                },
-                success : function() {
-                    setTimeout(function(){
-                        location.reload();
-                    }, 2000);
-                },
-                error : function(e) {
-                    alert('Error: ' + e);
-                },
-            });
-            //$("#specialty").val( chkbxValues.join(",") );
-            //jq.("connections/saveRelationshipfromEdit.action", {relationshipId:  jq("#editRelationshipIdHolder").val(),personRelationType:  jq("#editRelationshipSelect").val(),personRelationSecurityLayer:checkboxValues}, function(){
-           // setTimeout(function(){
-            //    location.reload();
-           // }, 10000);
-        });
-
-    //------------------- Edit Relation Button save JS Ends -----
 
     //------------- accept connection request Button JS ----------------
     $('.acceptConnectionRequest').click(
@@ -638,7 +525,7 @@ jq(document).ready(function(){
 
     //JS for the Button Events
 
-    
+
     $('.markScheduledReminder').click(
         function () {
             var reminderID=this.id.split("markScheduledReminder")[1];

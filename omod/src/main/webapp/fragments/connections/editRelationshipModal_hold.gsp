@@ -15,10 +15,10 @@
                     <div class="form-group ">
                         <div class="media">
                             <div class="media-left">
-                                <a href="#"> 
+                                <a href="#">
                                     <div class="profileBadge" id="editRelationProfileBadge">
                                         P B
-                                    </div> 
+                                    </div>
                                 </a>
                             </div>
 
@@ -53,7 +53,7 @@
                          </div>
                      </div>-->
 
-                    <div class="form-group">
+                    <div class="form-group" style = 'display:flex;'>
                         <label class="control-label col-sm-2">Have Access:</label>
                         <% securityLayers.each { securityLayer -> %>
                         <div class="form-check form-check-inline">
@@ -75,40 +75,42 @@
         </div>
     </div>
 </div>
+
 <script>
-    document.querySelector("#editRelationshipSaveButton").onclick = function(){
-        var modal = document.querySelector("#edit-relationship-modal"); // define a reference to the DOM of the modal
 
-        // extract identifiers
-        var relationship_id = modal.querySelector("#editRelationshipIdHolder").value;
-        var relationship_type = modal.querySelector("#editRelationshipSelect").value;
+document.querySelector("#editRelationshipSaveButton").onclick = function(){
+    var modal = document.querySelector("#edit-relationship-modal"); // define a reference to the DOM of the modal
 
-        // extract the selections of the multiple choice list
-        var checkbox_values_list =[];
-        modal.querySelectorAll(".editRelationShareCheckbox:checkbox:checked")
-            .forEach((element)=>{
-                checkbox_values_list.push(element.value);
-            })
-        var checkbox_values = checkbox_values_list.toString();
+    // extract identifiers
+    var relationship_id = modal.querySelector("#editRelationshipIdHolder").value;
+    var relationship_type = modal.querySelector("#editRelationshipSelect").value;
 
-        // send the update to server
-        jq.ajax({
-            type : "POST",
-            url : "connections/saveRelationshipfromEdit.action",
-            data : {
-                relationshipId: jq("#editRelationshipIdHolder").val(),
-                personRelationType: jq("#editRelationshipSelect").val(),
-                personRelationSecurityLayer: checkboxValues
-            },
-            success : function() {
-                setTimeout(function(){
-                    location.reload();
-                }, 2000);
-            },
-            error : function(e) {
-                alert('Error: ' + e);
-            },
-        });
+    // extract the selections of the multiple choice list
+    var checkbox_values_list =[];
+    modal.querySelectorAll(".editRelationShareCheckbox:checkbox:checked")
+        .forEach((element)=>{
+            checkbox_values_list.push(element.value);
+        })
+    var checkbox_values = checkbox_values_list.toString();
 
-    }
+    // send the update to server
+    jq.ajax({
+        type : "POST",
+        url : "connections/saveRelationshipfromEdit.action",
+        data : {
+            relationshipId: relationship_id,
+            personRelationType: relationship_type,
+            personRelationSecurityLayer: checkboxValues
+        },
+        success : function() {
+            setTimeout(function(){
+                location.reload();
+            }, 2000);
+        },
+        error : function(e) {
+            alert('Error: ' + e);
+        },
+    });
+
+}
 </script>

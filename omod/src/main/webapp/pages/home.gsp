@@ -46,9 +46,6 @@ ${ ui.includeFragment("patientportaltoolkit", "headerForApp") }
         <div id="preventiveCare" class="tab-pane fade">
             ${ ui.includeFragment("patientportaltoolkit", "preventiveCare") }
         </div>
-        <div id="healthyBehaviors" class="tab-pane fade">
-            ${ ui.includeFragment("patientportaltoolkit", "healthyBehaviors") }
-        </div>
     </div>
     <% } %>
 </div>

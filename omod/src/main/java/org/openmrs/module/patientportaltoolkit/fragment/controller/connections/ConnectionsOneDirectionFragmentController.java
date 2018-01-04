@@ -1,4 +1,4 @@
-package org.openmrs.module.patientportaltoolkit.fragment.controller;
+package org.openmrs.module.patientportaltoolkit.fragment.controller.home;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

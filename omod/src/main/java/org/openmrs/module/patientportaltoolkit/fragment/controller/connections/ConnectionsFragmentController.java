@@ -38,9 +38,6 @@ public class ConnectionsFragmentController {
     protected final Log log = LogFactory.getLog(getClass());
 
     public void controller(PageModel model,PageRequest pageRequest) {
-        model.addAttribute("relationships", Context.getService(PatientPortalRelationService.class).getPatientPortalRelationByPerson(Context.getAuthenticatedUser().getPerson()));
-        model.addAttribute("securityLayers",Context.getService(SecurityLayerService.class).getAllSecurityLayers());
-        model.addAttribute("relationshipTypes", Context.getPersonService().getAllRelationshipTypes());
         model.addAttribute("user", Context.getAuthenticatedUser());
         log.info(PPTLogAppender.appendLog("REQUEST_CONNECTIONS_FRAGMENT", pageRequest.getRequest()));
 
